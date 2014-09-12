@@ -27,7 +27,7 @@ Pros and Cons?
 
 Instructions
 ==
-1. Download and install AutoHotkey_L from http://www.autohotkey.com (should be the default one).
+1. Download and install AutoHotkey from http://ahkscript.org/ (should be the default one).
 2. Save/Extract the SFMT.ahk file to your computer (ZIP button in the top left of GitHub).
 3. Run this file by double-clicking on it to generate the output file, which is where your now playing song will be later. By default, it's "nowplaying.txt" and refreshes every 3 seconds.
 4. Open your media player of choice and begin playing music.

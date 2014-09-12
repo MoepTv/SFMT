@@ -1,5 +1,6 @@
-; Stream-Friendly Music Ticker v1
-; https://github.com/gustafsonk/SFMT
+; Stream-Friendly Music Ticker v1.1
+; Original Code: https://github.com/gustafsonk/SFMT
+; Edited Code: https://github.com/thesymbol/SFMT
 
 ; Description:
 ; This script is intended to make it possible to share the currently playing song from your media
@@ -23,7 +24,7 @@
 ; - No GUI for configuration (yet)
 
 ; Instructions:
-; 1. Download and install AutoHotkey_L from http://www.autohotkey.com (should be the default one).
+; 1. Download and install AutoHotkey from http://ahkscript.org/ (should be the default one).
 ; 2. Save/Extract the SFMT.ahk file to your computer (ZIP button in the top left of GitHub).
 ; 3. Run this file by double-clicking on it to generate the output file, which is where your now
 ;    playing song will be later. By default, it's "nowplaying.txt" and refreshes every 3 seconds.
@@ -67,14 +68,14 @@
 
 ; CONFIGURE ME (START)
   ; Getting the media player's window title, assumes no other window titles have this text
-  windowTitle := "Winamp"  ; PART 1: The media player's window title needs to always have this text
+  windowTitle := "- Google Play Musik"  ; PART 1: The media player's window title needs to always have this text
   SetTitleMatchMode 2  ; Look everywhere in window titles for a match, not just the beginning
   DetectHiddenWindows, on  ; Also check window titles minimized to the system tray
 
   ; Parsing the media player's window title, use "" to not trim one or both of the sides
   firstAfter := ""  ; PART 2: Everything left of the first instance of this and itself is trimmed
-  lastBefore := ""  ; PART 2: Same idea above except this trims right and reads right-to-left
-
+  lastBefore := "- Google Play Musik"  ; PART 2: Same idea above except this trims right and reads right-to-left
+  
   ; Set the output file
   outputFile := "nowplaying.txt"
 
@@ -82,8 +83,11 @@
   refreshRate = 3000
 
   ; For scrolling text that wraps continuously without spacing (OBS), use "" to not use this
-  scrollSeparator := ""  ; PART 3: Separate the first character from the last character
-  AutoTrim, off  ; Leading/trailing space is ignored by AHK by default
+  scrollSeparator := "- "  ; PART 3: Separate the first character from the last character
+  AutoTrim, on  ; Leading/trailing space is ignored by AHK by default
+  
+  paused := "Uppspelningskö" ; The paused text that you want to change. (leave empty to disable)
+  pausedEdited := "Music Paused" ; The paused text to change to.
 
   ; All 3 streaming programs can use UTF-8 to display Unicode characters
   FileEncoding, UTF-8
@@ -120,6 +124,18 @@
     {
       ; Replace the file for a new title
       OverwriteFile(outputFile, title)
+    }
+
+    ; If we use scrollSeperator include those in the search for the text
+    pausedV = %scrollSeparator%%paused%
+    ; If we use scrollSeperator add those to the paused edited text
+    pausedEditedV = %scrollSeparator%%pausedEdited%
+
+    ; Check if the file needs to be edited to display another text while paused
+    if FileEqualsText(outputFile, pausedV)
+    {
+        ; Replace the file for a new paused title
+        OverwriteFile(outputFile, pausedEditedV)
     }
     return
 
