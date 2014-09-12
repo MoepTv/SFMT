@@ -75,7 +75,7 @@
   ; Parsing the media player's window title, use "" to not trim one or both of the sides
   firstAfter := ""  ; PART 2: Everything left of the first instance of this and itself is trimmed
   lastBefore := ""  ; PART 2: Same idea above except this trims right and reads right-to-left
-  
+
   ; Set the output file
   outputFile := "nowplaying.txt"
 
