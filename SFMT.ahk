@@ -1,6 +1,6 @@
-; Stream-Friendly Music Ticker v1.1
+; Stream-Friendly Music Ticker v1.2
 ; Original Code: https://github.com/gustafsonk/SFMT
-; Edited Code: https://github.com/thesymbol/SFMT
+; Edited Code: https://github.com/MoepTv/SFMT
 
 ; Description:
 ; This script is intended to make it possible to share the currently playing song from your media
@@ -68,16 +68,20 @@
 
 ; CONFIGURE ME (START)
   ; Getting the media player's window title, assumes no other window titles have this text
-  windowTitle := "Winamp"  ; PART 1: The media player's window title needs to always have this text
+  windowTitles := ["Winamp", "- YouTube - Chromium", "- YouTube Music - Chromium"] ; PART 1: The media player's window title needs to always have this text
   SetTitleMatchMode 2  ; Look everywhere in window titles for a match, not just the beginning
   DetectHiddenWindows, on  ; Also check window titles minimized to the system tray
 
   ; Parsing the media player's window title, use "" to not trim one or both of the sides
-  firstAfter := ""  ; PART 2: Everything left of the first instance of this and itself is trimmed
-  lastBefore := ""  ; PART 2: Same idea above except this trims right and reads right-to-left
+  firstAfters := [""]  ; PART 2: Everything left of the first instance of this and itself is trimmed
+  lastBefores := ["- YouTube - Chromium", "- YouTube Music - Chromium"]  ; PART 2: Same idea above except this trims right and reads right-to-left
 
   ; Set the output file
   outputFile := "nowplaying.txt"
+
+  ; What to include before and after the title in the file
+  filePrefix := "Song: "
+  fileSuffix := ""
 
   ; Refresh rate in milliseconds for repeating this script
   refreshRate = 3000
@@ -110,14 +114,26 @@
   return
 
   Update:
+    ; Find a matching window
+    For index, value in windowTitles
+      If WinExist(value)
+        break
+
     ; Get the unparsed title of the media player's window
-    WinGetTitle, title, %windowTitle%
+    WinGetTitle, title
 
     ; Remove junk at the beginning and end of the title
-    TrimText(title, firstAfter, lastBefore)
+    For index, value in firstAfters
+      title := LTrim(title, value)
+
+    For index, value in lastBefores
+      title := RTrim(title, value)
+
+    ; Remove any excess spaces
+    title := Trim(title)
 
     ; Separate the first and last character with a separator for better continuous text scrolling
-    title = %scrollSeparator%%title%
+    title = %filePrefix%%scrollSeparator%%title%%fileSuffix%
 
     ; Check if the file needs to be updated with a new title (avoids unneeded disk writing)
     if !FileEqualsText(outputFile, title)
